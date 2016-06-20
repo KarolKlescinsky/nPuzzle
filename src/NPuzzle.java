@@ -5,9 +5,7 @@ public class NPuzzle {
 
 	static long start = System.currentTimeMillis();
 	long elapsedTimeMillis = 0;
-
 	private GameState state = GameState.PLAYING;
-
 	private int sirka, dlzka;
 
 	public NPuzzle(int sirka, int dlzka) {
@@ -16,7 +14,7 @@ public class NPuzzle {
 	}
 
 	public NPuzzle() {
-		this(4,4);
+		this(4, 4);
 	}
 
 	public int getSirka() {
@@ -29,6 +27,10 @@ public class NPuzzle {
 
 	public GameState getState() {
 		return state;
+	}
+
+	public void setState(GameState state) {
+		this.state = state;
 	}
 
 	public int[] generate(int[] mojePole) {
@@ -62,7 +64,7 @@ public class NPuzzle {
 				} else {
 					System.out.print(moje2Pole[x][y] + "  ");
 				}
-				if (y==getDlzka()-1) {
+				if (y == getDlzka() - 1) {
 					System.out.println();
 				}
 			}
@@ -92,13 +94,13 @@ public class NPuzzle {
 		System.out.println("Enter 'new' if you want to start a new game.");
 		String input = userInput.next();
 		input = input.toUpperCase();
-		
-		try{
+
+		try {
 			input = input.toUpperCase();
-		} catch (NumberFormatException e){
-			//It never happens
+		} catch (NumberFormatException e) {
+			// It never happens
 		}
-		
+
 		for (int x = 0; x < 4; x++) {
 			boolean change = false;
 			for (int y = 0; y < 4; y++) {
@@ -114,50 +116,57 @@ public class NPuzzle {
 						moje2Pole[x + 1][y] = 0;
 						change = true;
 						break;
-					}
+					} else {
 
-					if (input.equals("S") || input.equals("DOWN")) {
-						if (x == 0) {
-							System.out.println("Cant move there.");
+						if (input.equals("S") || input.equals("DOWN")) {
+							if (x == 0) {
+								System.out.println("Cant move there.");
+								break;
+							}
+							moje2Pole[x][y] = moje2Pole[x - 1][y];
+							moje2Pole[x - 1][y] = 0;
+							change = true;
 							break;
-						}
-						moje2Pole[x][y] = moje2Pole[x - 1][y];
-						moje2Pole[x - 1][y] = 0;
-						change = true;
-						break;
-					}
+						} else {
 
-					if (input.equals("A") || input.equals("LEFT")) {
-						if (y == getDlzka() - 1) {
-							System.out.println("Cant move there.");
-							break;
-						}
-						moje2Pole[x][y] = moje2Pole[x][y + 1];
-						moje2Pole[x][y + 1] = 0;
-						change = true;
-						break;
-					}
+							if (input.equals("A") || input.equals("LEFT")) {
+								if (y == getDlzka() - 1) {
+									System.out.println("Cant move there.");
+									break;
+								}
+								moje2Pole[x][y] = moje2Pole[x][y + 1];
+								moje2Pole[x][y + 1] = 0;
+								change = true;
+								break;
+							} else {
 
-					if (input.equals("D") || input.equals("RIGHT")) {
-						if (y == 0) {
-							System.out.println("Cant move there.");
-							break;
+								if (input.equals("D") || input.equals("RIGHT")) {
+									if (y == 0) {
+										System.out.println("Cant move there.");
+										break;
+									}
+									moje2Pole[x][y] = moje2Pole[x][y - 1];
+									moje2Pole[x][y - 1] = 0;
+									change = true;
+									break;
+								} else {
+									if (input.equals("EXIT")) {
+										System.out.println("Your time was: " + getStartTime() + "seconds");
+										System.exit(0);
+									} else {
+										if (input.equals("NEW")) {
+											StartGame();
+										}
+									}
+								}
+								if (change) {
+									break;
+								}
+							}
+						
 						}
-						moje2Pole[x][y] = moje2Pole[x][y - 1];
-						moje2Pole[x][y - 1] = 0;
-						change = true;
-						break;
-					}
-					if (input.equals("EXIT")) {
-						System.exit(0);
-					}
-					if (input.equals("NEW")) {
-						StartGame();
 					}
 				}
-			}
-			if (change) {
-				break;
 			}
 		}
 		return moje2Pole;
@@ -171,7 +180,7 @@ public class NPuzzle {
 				if (moje2Pole[i][j] < moje2Pole[i][j + 1]) {
 					help = true;
 				} else {
-					if (moje2Pole[getDlzka()][getSirka()] == 0 && help == true) {
+					if (moje2Pole[getDlzka() - 1][getSirka() - 1] == 0 && help) {
 						help = true;
 					} else {
 						help = false;
@@ -179,6 +188,11 @@ public class NPuzzle {
 				}
 			}
 		}
+
+		if (help) {
+			setState(GameState.SOLVED);
+		}
+
 		return help;
 	}
 
@@ -186,9 +200,10 @@ public class NPuzzle {
 
 		do {
 			update(moje2Pole);
+			// wisSorted(moje2Pole);
 			if (getState() == GameState.SOLVED) {
 				System.out.println("CONGRATULATIONS! YOU WON THE GAME!");
-
+				System.out.println("Your time was: " + getStartTime() + "seconds");
 				System.exit(0);
 			}
 		} while (true);
